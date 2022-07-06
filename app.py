@@ -21,6 +21,7 @@ st.set_page_config(layout = "wide")
 df_time = pd.read_csv("df_time_all.csv")
 df_time = df_time.drop(df_time.columns.to_list()[0],axis =1)
 df_time['FECHA HECHO'] = pd.to_datetime(df_time['FECHA HECHO'])
+data_time = pd.read_csv('data_time.csv')
 
 
 
@@ -28,16 +29,6 @@ df_time['FECHA HECHO'] = pd.to_datetime(df_time['FECHA HECHO'])
 #Plto with full time series. 
 
 
-#INITIAL PLOT 
-df_time_big_front = df_time.groupby(pd.Grouper(key = 'FECHA HECHO',freq='M')).sum().reset_index()
-plot_time = px.line(
-    df_time_big_front,
-    x = 'FECHA HECHO',
-    y = 'CANTIDAD'
-)
-plot_time.update_yaxes(title_text = "Cantidad de eventos")
-plot_time.update_xaxes(title_text = "Tiempo ")
-plot_time.update_layout(title = " Progresion de crimenes en el tiempo " ,width = 1200)
 
 
 
@@ -85,7 +76,14 @@ plot_forecast = px.line(
     color = 'note'
 )
 plot_forecast.add_vline(x = datetime.datetime(year = 2022,month = 2, day = 1), line_dash = 'dash' )
-plot_forecast.update_layout(title = " Forecast " ,width = 1200)
+plot_forecast.update_layout(title = " Forecast " ,width = 1350)
+
+
+
+
+#Comparacion
+
+log_comp = pd.read_csv('log_comp.csv')
 
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- #
@@ -119,7 +117,56 @@ if select_box == "Analisis tiempo":
     st.title("Analisis estadisitco  -  Delitos sexuales en Colombia")
     st.title("Progresion de los Delitos En Colombia")
     with st.container():
-        st.plotly_chart(plot_time,use_conatiner_width = True)
+
+
+
+        #st.plotly_chart(plot_time,use_conatiner_width = True)
+
+        page_names_ = ['Por departamento','Total']
+        page_ = st.radio("Puedes filtrar los datios por departamento o ver el total por País",page_names_)
+        st.write("Escala escogida", page_)
+
+        if page_ == 'Total':
+            data_time_ = data_time.groupby('MONTH-YEAR')['CANTIDAD_DELITOS_SEXUALES'].sum().to_frame().reset_index()
+            Total_ = px.line(data_time_,x = 'MONTH-YEAR', y = 'CANTIDAD_DELITOS_SEXUALES',width = 1350)
+            Total_.update_layout(
+            title = "Progresion de crimenes",
+            width = 1000)
+            st.plotly_chart(Total_)
+
+        else: 
+            filter_dept_ = st.selectbox("Departamento", sorted(data_time['DEPARTAMENTO'].unique()))
+            data_time_filtered = data_time[data_time['DEPARTAMENTO'] == filter_dept_]
+
+            filt_plot = px.line(data_time_filtered,x= 'MONTH-YEAR', y = 'CANTIDAD_DELITOS_SEXUALES',width = 1350)
+            filt_plot.update_layout(
+            title = "Progresion de crimenes",
+            width = 1000)            
+            st.plotly_chart(filt_plot)
+    
+    st.markdown("<hr>",unsafe_allow_html = True)
+
+
+    column1,column2 = st.columns(2)
+
+    with column1:
+        capturas_df = pd.read_csv("capturas_genero.csv")
+        cap_plot = px.bar(capturas_df,x = 'index', y = 'GENERO')
+        cap_plot.update_layout(
+        title = "Capturas por genero en 2022",
+        width = 1000)            
+        st.plotly_chart(cap_plot)
+    with column2:
+        rep_casos = pd.read_csv("rep_casos_gen.csv")
+        feme_mas_ = px.bar(rep_casos, x ='Año', y = rep_casos.columns[2:] )
+        feme_mas_.update_layout(
+        title = "Reportes de Casos por Genero",
+        width = 1000)  
+        st.plotly_chart(feme_mas_)
+
+    
+    
+    
     st.markdown("<hr>",unsafe_allow_html = True)
     col1,col2 =  st.columns(2)
     with col1:
@@ -141,12 +188,30 @@ if select_box == "Dsitribuciones":
     st.title("Dsitribuciones")
     
     
-    
+    page_names = ['Real','Logaritmica']
+    page = st.radio("Puedes escoger Si ver en escala logaritimica o Real ",page_names)
+    st.write("Escala escogida", page)
+
+    if page == 'Real':
+        real_ = px.line(log_comp,x = 'MONTH-YEAR', y = ['CANTIDAD_DELITOS_INTRAFAMI','CANTIDAD_DELITOS_SEXUALES'],width = 1350)
+
+        st.plotly_chart(real_)
+    else:
+
+        log = px.line(log_comp,x = 'MONTH-YEAR', y = ['CANTIDAD_DELITOS_INTRAFAMI_log','CANTIDAD_DELITOS_SEXUALES_log'],width = 1350)
+        st.plotly_chart(log)
+
+
+
+
+
+
+
+
+
+
     filter_dept = st.selectbox("Departamento",sorted(corr_sx_intra['DEPARTAMENTO'].unique()))
-
-
     df_filtered = corr_sx_intra[corr_sx_intra['DEPARTAMENTO'] == filter_dept]
-
     col_a, col_b=  st.columns(2)
     with col_a:
         fig_a = px.box(df_filtered, y ='CANTIDAD_DELITOS_SEXUALES')
