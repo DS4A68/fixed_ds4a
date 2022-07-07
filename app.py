@@ -97,12 +97,17 @@ fig_corr = px.scatter(corr_sx_intra, x="CANTIDAD_DELITOS_SEXUALES", y="CANTIDAD_
 
 
 
-select_box = st.sidebar.selectbox("Despliege esta lista de opciones para ver los distintos analisis",("Como funciona esta apliación","Analisis tiempo","Dsitribuciones",'Geoanalisis','Creadores'))
+select_box = st.sidebar.selectbox("Despliege esta lista de opciones para ver los distintos analisis",(
+    "Como funciona esta apliación",
+    "Comportamiento por tiempo y genero",
+    "Relación con la violencia domestica",
+    'Progresión geográfica',
+    'Creadores'))
 #st.title("Analisis estadisitco  -  Delitos sexuales en Colombia")
 
 
 if select_box == "Como funciona esta apliación":
-    st.title("Analisis estadisitco  -  Delitos sexuales en Colombia")
+    st.title("Analisis estadísitco  -  Delitos sexuales en Colombia")
     st.title("Como funciona esta aplicación")
     st.markdown("Bienvenido a nuestra aplicación. Mira el siguiente video si es la primera vez que entras o si deseas recordar como funciona!")
     st.markdown("Gracias")
@@ -113,9 +118,9 @@ if select_box == "Como funciona esta apliación":
 
 # ---------------------------------------------------------------------------------------------
 
-if select_box == "Analisis tiempo":
-    st.title("Analisis estadisitco  -  Delitos sexuales en Colombia")
-    st.title("Progresion de los Delitos En Colombia")
+if select_box == "Comportamiento por tiempo y genero":
+    st.title("Analisis estadísitco  -  Delitos sexuales en Colombia")
+    st.title("Comportamiento por tiempo y genero")
     with st.container():
 
 
@@ -182,15 +187,15 @@ if select_box == "Analisis tiempo":
 
 # ---------------------------------------------------------------------------------------------
 
-if select_box == "Dsitribuciones":
+if select_box == "Relación con la violencia domestica":
     
-    st.title("Analisis estadisitco  -  Delitos sexuales en Colombia")
-    st.title("Dsitribuciones")
+    st.title("Analisis estadísitco  -  Delitos sexuales en Colombia")
+    st.title("Relación con la violencia domestica")
     
     
-    page_names = ['Real','Logaritmica']
+    page_names = ['Real','Logarítmica']
     page = st.radio("Puedes escoger Si ver en escala logaritimica o Real ",page_names)
-    st.write("Escala escogida", page)
+    st.write("Escala escogida: ", page)
 
     if page == 'Real':
         real_ = px.line(log_comp,x = 'MONTH-YEAR', y = ['CANTIDAD_DELITOS_INTRAFAMI','CANTIDAD_DELITOS_SEXUALES'],width = 1350)
@@ -228,9 +233,9 @@ if select_box == "Dsitribuciones":
     
     
     with col_2: 
-        html_plot_info = """<h2> Trendline :  <i> Y  = 4.70794  X - 96.547</i></h2>
+        html_plot_info = """<h2> Tendencia :  <i> Y  = 4.70794  X - 96.547</i></h2>
         <h2> <h:math> R^2 </h:math> : 0.864 </h2>
-        <h2> Correlation Matrix : <h2>[1, 0.92967626]<br>[0.92967626, 1] </h2>
+        <h2> Matriz de Correlación : <h2>[1, 0.92967626]<br>[0.92967626, 1] </h2>
         """
         st.markdown(html_plot_info,unsafe_allow_html = True)
 
@@ -242,9 +247,9 @@ if select_box == "Dsitribuciones":
 
 
 
-if select_box == 'Geoanalisis':
-    st.title("Analisis estadisitco  -  Delitos sexuales en Colombia")
-    st.title("Analisis Geografico")
+if select_box == 'Progresión geográfica':
+    st.title("Analisis estadísitco  -  Delitos sexuales en Colombia")
+    st.title("Progresión geográfica")
 
     _merged_ = geopandas.read_file('geojson\_merged_.geojson')
     _orig_ = geopandas.read_file('geojson\_orig_.geojson')
@@ -255,7 +260,7 @@ if select_box == 'Geoanalisis':
 
 
     map_ = folium.Map(location=[6.258679441576251, -75.55570032068375],
-                        zoom_start=7,
+                        zoom_start=5,
                         tiles="OpenStreetMap")
     g = TimeSliderChoropleth(
         _orig_.to_json(),
@@ -272,8 +277,14 @@ if select_box == 'Geoanalisis':
         )).add_to(map_)
 
 
-    st.image("years.jpg",width = 1300)
-    st_data_ = st_folium(map_,width = 1300,height = 800)
+   
+    st.success(" Despus de hacer Zoom o desplazarte por el mapa, espera unos segundos para que cargue correctamente ")
+
+    col_1_,col_2_,col_3_ =  st.columns(3)
+    with col_2_:
+        st.image("years.jpg",width = 700)
+        #st.plotly_chart(fig_corr,use_container_width =True)
+        st_data_ = st_folium(map_,width = 800,height = 600)
 
 
 
@@ -298,7 +309,7 @@ email_alejo = """alejandrovelez1995@hotmail.com"""
 email_dani = """dlopesierraz@gmail.com"""
 
 if select_box == 'Creadores':
-    st.title("Analisis estadisitco  -  Delitos sexuales en Colombia")
+    st.title("Analisis estadísitco  -  Delitos sexuales en Colombia")
     st.title("Creadroes:")
     st.markdown("<hr>", unsafe_allow_html =True)
 
@@ -306,7 +317,7 @@ if select_box == 'Creadores':
     with st.container():
         col_1,col_2,col_3 = st.columns(3)
         with col_1:
-            st.image("juan.jpg",caption = 'Juan Céspedes' )
+            st.image("Juan.jpg",caption = 'Juan Céspedes' )
         with col_2:
             st.markdown("<h2>About</h2>",unsafe_allow_html = True) 
             st.markdown("Joven competitivo que se caracteriza por tener una gran motivación para seguir perfeccionando habilidades y por crecer profesionalmente. Con capacidades para trabajar en equipo, liderazgo y amplio sentido de pertenencia. Es creativo y visionario.Actualmente cuenta con especial interés en Big Data y analítica, Así como en temas de producción y finanzas. Se ha desempeñado como dirigente scout de un grupo de jóvenes de 13 a 16 años. Persona proactiva, responsable y con grandes calidades morales. Ha hecho parte de grandes proyectos de consultoría con empresas como Cotrafa, y la universidad Nacional de Colombia.")
@@ -329,7 +340,7 @@ if select_box == 'Creadores':
             st.image("daniel.jpg",caption = 'Daniel Lopesierra' )
         with col_2:
             st.markdown("<h2>About</h2>",unsafe_allow_html = True) 
-            st.markdown("Professional with more than 6 years of experience across different Finance and Supply Chain functions. I have experience in financial planning, analysis and controlling, as well as supply chain planning in multinational companies. I've worked in different industries such as CPG, Pharma and I'm currently working for Adidas in the Retail industry.")
+            st.markdown("Profesional con más de 6 años de experiencia a lo largo de diferentes funciones y roles de Finanzas y cadena de suministros. Tengo experiencia en planeamiento financiero, análisis y control del mismo modo, en planeamiento de cadenas de suministros para organizaciones multinacionales. He trabajado en diferentes industrias como CPG, Pharma y actualmente trabajo para Adidas en la industria de Retail.")
         with col_3:
             st.markdown("<h2>Contact</h2>",unsafe_allow_html = True)
             
@@ -350,7 +361,7 @@ if select_box == 'Creadores':
             st.image("Alejo.jpg",caption = 'Alejandro Vélez' )
         with col_2:
             st.markdown("<h2>About</h2>",unsafe_allow_html = True) 
-            st.markdown("Bachelor in international business with several years worth of experience on different fields that have led to develop a very holistic insight of modern companies. Focused on teamwork and goal accomplishing. Into data analystics using of SQL and Python.")
+            st.markdown("Profesional en negocios internacionales con varios años de experiencia en diferentes áreas que le han llevado a tener un entendimiento muy holístico de las organizaciones modernas. Enfocado en el trabajo de equipo y cumplimiento de los objetivos. Técnicamente especializado en el manejo de Python y SQL para la ingeniería Datos")
         with col_3:
             st.markdown("<h4>Contact</h4>",unsafe_allow_html = True)
             
